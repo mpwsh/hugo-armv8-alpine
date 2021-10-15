@@ -1,12 +1,16 @@
-# Hugo
+A [Docker](http://docker.com) image to build [Hugo](https://gohugo.io) sites (using the extended version) in armv8 (rpi4). Base image based on bullseye.
 
-A [Docker](http://docker.com) file to build [Hugo](https://gohugo.io), one of the most popular open-source static site generators for AMD & ARM devices over an alpine base image based.
+This image was created to be used with [GitDocs](https://github.com/jimangel/GitDocs) in my raspberry pi kubernetes cluster, but you can still use it as a normal `hugo` image (more info below)
 
+GitDocs deployment manifests can be found [here](https://github.com/mpwsh/blog/k8s-deployment)
+
+
+
+Readme from forked repo:
 > Be aware! You should read carefully the usage documentation of every tool!
-
 ## Details
 
-- [GitHub](https://github.com/elswork/rpi-hugo)
+- [GitHub](https://github.com/marianopw/rpi-hugo)
 - [Deft.Work my personal blog](https://deft.work)
 
 | Docker Hub | Docker Pulls | Docker Stars | Size/Layers |
@@ -49,4 +53,5 @@ docker run -p 1313:1313 -v /path/to/**sitename**:/src elswork/rpi-hugo server -b
 docker run --rm -v /path/to/**sitename**:/src --name HugoBuild elswork/rpi-hugo --cleanDestinationDir
 ```
 
-**[Sponsor me!](https://github.com/sponsors/elswork) Together we will be unstoppable.**
+### Credits
+Forked from [elswork/rpi-hugo](https://github.com/elswork/rpi-hugo). Thank you!
