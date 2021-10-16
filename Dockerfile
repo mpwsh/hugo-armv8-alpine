@@ -1,4 +1,4 @@
-ARG BASEIMAGE=arm64v8/golang:1.17.2-bullseye
+ARG BASEIMAGE=arm64v8/golang:1.17.2-alpine
 FROM ${BASEIMAGE}
 
 ARG HUGO_VERSION=0.88.1
@@ -20,8 +20,6 @@ LABEL mantainer="mpw <x@mpw.sh>" \
     org.label-schema.schema-version="1.0"
 
 ENV HUGO_BIND="0.0.0.0" \
-    HUGO_DESTINATION="public" \
-    HUGO_ENV="DEV" \
     HUGO_EDITION="extended" \
     HUGO_CACHEDIR="/tmp" \
     NODE_PATH=".:/usr/local/node/lib/node_modules" \
@@ -29,7 +27,11 @@ ENV HUGO_BIND="0.0.0.0" \
     GOPATH="/go" \
     HOME="/tmp"
 
-RUN apt-get update -y && apt-get install unzip zip -y 
+#RUN apt-get update  -y && DEBIAN_FRONTEND=noninteractive apt-get install -y zip unzip && rm -rf /var/lib/apt/lists/*  && find /tmp -mindepth 1 -maxdepth 1 | xargs rm -rf  && mkdir -p /src /target  && chmod a+w /src /target
+RUN apk add --no-cache --update \
+    zip unzip git gcc g++ musl-dev
+RUN mkdir /src /target
+RUN chmod a+w /src /target
 ADD https://github.com/gohugoio/hugo/archive/refs/tags/v${HUGO_VERSION}.zip /tmp
 RUN unzip /tmp/v${HUGO_VERSION}.zip -d /tmp
 WORKDIR /tmp/hugo-${HUGO_VERSION}
@@ -38,10 +40,17 @@ RUN mkdir -p /usr/local/sbin
 RUN mv hugo /usr/local/sbin/hugo && rm -rf /tmp/*
 
 VOLUME /src
-VOLUME /output
+VOLUME /target
 
 WORKDIR /src
 
 ENTRYPOINT ["hugo"]
 
+
 EXPOSE 1313
+
+ONBUILD ARG HUGO_CMD
+ONBUILD ARG HUGO_DESTINATION
+ONBUILD ARG HUGO_ENV
+ONBUILD ARG HUGO_DESTINATION="${HUGO_DESTINATION:/target}" HUGO_ENV="${HUGO_ENV:-DEV}"
+
