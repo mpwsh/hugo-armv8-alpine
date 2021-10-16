@@ -14,7 +14,7 @@ LABEL mantainer="mpw <x@mpw.sh>" \
     org.label-schema.description="Hugo extended for armv8" \
     org.label-schema.url="https://mpw.sh" \
     org.label-schema.vcs-ref=$VCS_REF \
-    org.label-schema.vcs-url="https://github.com/marianopw/rpi-hugo" \
+    org.label-schema.vcs-url="https://github.com/mpwsh/rpi-hugo" \
     org.label-schema.vendor="mpw" \
     org.label-schema.version=$VERSION \
     org.label-schema.schema-version="1.0"
@@ -27,7 +27,6 @@ ENV HUGO_BIND="0.0.0.0" \
     GOPATH="/go" \
     HOME="/tmp"
 
-#RUN apt-get update  -y && DEBIAN_FRONTEND=noninteractive apt-get install -y zip unzip && rm -rf /var/lib/apt/lists/*  && find /tmp -mindepth 1 -maxdepth 1 | xargs rm -rf  && mkdir -p /src /target  && chmod a+w /src /target
 RUN apk add --no-cache --update \
     zip unzip git gcc g++ musl-dev
 RUN mkdir /src /target
@@ -53,4 +52,3 @@ ONBUILD ARG HUGO_CMD
 ONBUILD ARG HUGO_DESTINATION
 ONBUILD ARG HUGO_ENV
 ONBUILD ARG HUGO_DESTINATION="${HUGO_DESTINATION:/target}" HUGO_ENV="${HUGO_ENV:-DEV}"
-

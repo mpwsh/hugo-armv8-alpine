@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gitdocs
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: gitdocs
+  template:
+    metadata:
+      labels:
+        name: gitdocs
+    spec:
+      securityContext:
+        fsGroup: 65534
+        runAsUser: 65533
+        runAsGroup: 65534
+      containers:
+      - name: git-sync
+        image: k8s.gcr.io/git-sync/git-sync:v3.3.4
+        imagePullPolicy: Always
+        volumeMounts:
+        - name: markdown
+          mountPath: /tmp/git
+        env:
+        - name: GIT_SYNC_REPO
+          value: https://github.com/sourcethemes/academic-kickstart.git
+#          value: https://github.com/kubernetes/website.git
+        - name: GIT_SYNC_DEST
+          value: git-sync
+        - name: GIT_SYNC_WAIT
+          value: "30"
+        securityContext:
+          allowPrivilegeEscalation: false
+##########################
+      - name: hugo
+        image: mpwsh/rpi-hugo-alpine:0.88.1-ext
+        imagePullPolicy: Always
+        env:
+        - name: HUGO_VERSION
+          value: "0.88.1"
+        - name: HUGO_ENV
+          value: "production"
+        - name: HUGO_DESTINATION
+          value: "../../target"
+        volumeMounts:
+        - name: markdown
+          mountPath: /src
+        - name: html
+          mountPath: /target
+        command: ["/bin/sh","-c"]
+        #debug
+        #args: [ "sleep 3600" ]
+        args: ["while ! ls /src/git-sync/config* 1> /dev/null 2>&1; do echo 'No Config' && sleep 1; done && hugo --noTimes -d /target --watch --source=/src/git-sync/ --cleanDestinationDir"]
+        securityContext:
+          allowPrivilegeEscalation: false 
+#######################
+      - name: nginx
+#        image: nginx
+        image: nginxinc/nginx-unprivileged
+        imagePullPolicy: Always
+        volumeMounts:
+        - name: html
+          mountPath: /usr/share/nginx/html
+        - name: nginx-conf
+          mountPath: /etc/nginx/nginx.conf # mount nginx-conf volume to /etc/nginx
+          subPath: nginx.conf
+          readOnly: true
+        securityContext:
+          allowPrivilegeEscalation: false
+######################
+      volumes:
+      - name: markdown
+        emptyDir: {}
+      - name: html
+        emptyDir: {}
+      - name: nginx-conf
+        configMap:
+          name: nginx-conf # place ConfigMap `nginx-conf` on /etc/nginx
+          items:
+            - key: nginx.conf
+              path: nginx.conf

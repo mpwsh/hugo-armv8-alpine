@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: gitdocs
+spec:
+  rules:
+    - host: blog.mpw.sh
+      http:
+        paths:
+          - backend:
+              serviceName: gitdocs
+              servicePort: 8080
+            path: /
+#  tls:
+#  - hosts:
+#    - gitdocs.example.com
+#    secretName: gitdocs-cert
