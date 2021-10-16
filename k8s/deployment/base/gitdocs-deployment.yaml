@@ -35,7 +35,7 @@ spec:
           allowPrivilegeEscalation: false
 ##########################
       - name: hugo
-        image: mpwsh/rpi-hugo-alpine:0.88.1-ext
+        image: mpwsh/hugo-armv8-alpine:0.88.1-ext
         imagePullPolicy: Always
         env:
         - name: HUGO_VERSION
