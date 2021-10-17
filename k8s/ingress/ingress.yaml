@@ -1,0 +1,32 @@
+
+apiVersion: v1
+items:
+- apiVersion: extensions/v1beta1
+  kind: Ingress
+  metadata:
+    name: gitdocs
+  spec:
+    rules:
+    - host: docs.192.168.1.9.nip.io
+      http:
+        paths:
+        - backend:
+            serviceName: gitdocs
+            servicePort: 8080
+          path: /
+          pathType: ImplementationSpecific
+    - host: docs.mpw.sh
+      http:
+        paths:
+        - backend:
+            serviceName: gitdocs
+            servicePort: 8080
+          path: /
+          pathType: ImplementationSpecific
+    tls:
+    - hosts:
+      - docs.192.168.1.9.nip.io
+      - docs.mpw.sh
+  status:
+    loadBalancer: {}
+kind: List
